@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% include 'header.html' %}
+{% block title %}Главная страница{% endblock %}
+{% block content %}
+    <div class="container">
+        <h2>Задачи пользователя {{ user.name }}</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Название проекта</th>
+                    <th>Описание проекта</th>
+                    <th>Начало</th>
+                    <th>Конец</th>
+                    <th>Статус</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data %}
+                <tr>
+                    <td>{{ row.name }}</td>
+                    <td>{{ row.desc }}</td>
+                    <td>{{ row.start }}</td>
+                    <td>{{ row.end }}</td>
+                    <td>
+                        {% if row.status == 1 %}
+                            <p class="text-body-secondary">Завершен</p>
+                        {% elif row.status == 2 %}
+                            <p class="text-success-emphasis">В работе</p>
+                        {% elif row.status == 3 %}
+                            <p class="text-primary-emphasis">Будущий</p>
+                        {% else %}
+                            <p class="text-danger">Неверное значение</p>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+
+    </div>
+{% endblock %}

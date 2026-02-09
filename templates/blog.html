@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% include 'header.html' %}
+{% block title %}Главная страница{% endblock %}
+{% block content %}
+<!-- Заголовок статьи -->
+    <div class="mb-4">
+        <h1 class="display-4">{{ blog.title }}</h1>
+
+        <!-- Мета-информация -->
+        <div class="d-flex justify-content-between align-items-center text-muted mb-3">
+            <div>
+                <i class="bi bi-calendar"></i>
+                {{ blog.created_at.strftime('%d.%m.%Y в %H:%M') }}
+
+                {% if blog.updated_at and blog.updated_at != blog.created_at %}
+                    <span class="ms-3" title="Обновлено">
+                        <i class="bi bi-pencil"></i>
+                        {{ blog.updated_at.strftime('%d.%m.%Y %H:%M') }}
+                    </span>
+                {% endif %}
+            </div>
+
+            {% if blog.user %}
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-person-circle me-2"></i>
+                    <span>{{ blog.user.username }}</span>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Теги статьи -->
+        {% if blog.tags %}
+            <div class="mb-4">
+                {% for tag in blog.tags %}
+                    <a href="{{ url_for('blogs_by_tag', tag_name=tag.name) }}"
+                       class="badge bg-secondary text-decoration-none me-1">
+                        {{ tag.name }}
+                    </a>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <!-- Контент -->
+    <div class="blog-content mb-5">
+        {{ blog.content }}
+    </div>
+
+    <!-- Комментарии -->
+    <h3>Комментарии ({{ blog.comments|length }})</h3>
+
+    <!-- Форма комментария -->
+    {% if current_user.is_authenticated %}
+        <form method="POST" action="{{ url_for('add_comment', blog_id=blog.id) }}" class="mb-4">
+            <textarea name="content" class="form-control mb-2" rows="3" placeholder="Ваш комментарий..."></textarea>
+            <button type="submit" class="btn btn-primary">Отправить</button>
+        </form>
+    {% endif %}
+
+    <!-- Список комментариев -->
+    {% for comment in blog.comments %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <strong>
+                        {{ comment.user.name if comment.user else 'Аноним' }}
+                    </strong>
+                    <small class="text-muted">
+                        {{ comment.timestamp.strftime('%d.%m.%Y %H:%M') }}
+                    </small>
+                </div>
+                <p class="card-text mt-2">{{ comment.text }}</p>
+            </div>
+        </div>
+    {% else %}
+        <p class="text-muted">Комментариев пока нет</p>
+    {% endfor %}
+    </div>
+{% endblock %}

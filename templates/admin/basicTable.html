@@ -1,0 +1,53 @@
+{% extends '/admin/main.html' %}
+
+{% block dashboard %}
+<h3>Таблица: {{ tablename }}</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">№</th>
+            {% for field in fields %}
+                <th scope="col">{{ field.name }}({{ field.type }})</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in data %}
+        <tr>
+            <th scope="row">{{ loop.index }}</th>
+            {% for field in fields %}
+                <td>{{ row[field.name] }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+        <tr>
+            <form method="POST">
+                <th scope="row">...</th>
+                {% for field in fields %}
+                <td>
+                    {% if field.name == 'id' %}
+                        <input name="{{ field.name }}" disabled="true" type="text" value="Значение по умолчанию"/>
+                    {% else %}
+                        {% if field.type == 'TEXT' %}
+                            <textarea name="{{ field.name }}"> </textarea>
+                        {% elif field.type == 'DATETIME' %}
+                            <input name="{{ field.name }}" type="datetime-local" value="{{ now.strftime('%Y-%m-%dT%H:%M') }}"/></td>
+                        {% elif field.foreign_key|length > 0 %}
+                            <select name="{{ field.name }}" class="form-select" aria-label="Default select example">
+                                {% for elem in fkdict[field.name] %}
+                                    <option value="{{ loop.index }}">{{ elem }}</option>
+                                {% endfor%}
+                            </select>
+                        {% else %}
+                            <input name="{{ field.name }}" type="text"/>
+                        {% endif %}
+
+                    {% endif %}
+                </td>
+                {% endfor %}
+                <td> <button class="btn btn-primary w-80 py-2" type="submit" name="tablename" value="{{ tablename }}">Добавить</button> </td>
+            </form>
+        </tr>
+    </tbody>
+</table>
+{% endblock %}
